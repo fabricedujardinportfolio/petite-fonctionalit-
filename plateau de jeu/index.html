@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
+
+<head>
+    <title>JEU DE PIONS A DISTANCE </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" media="screen" type="text/css" title="Design" href="spectateur.css" />
+</head>
+
+<body bgcolor="#C4D7ED" text="#000000">
+    <script type="text/javascript" src="jquery-1.3.1.min/jquery-1.3.1.min.js"></script>
+    <script type="text/javascript">
+        var cpt = 1;
+        var commence = 0;
+        var timer;
+
+        function changer(elt_id, imageFile) {
+            $(elt_id).attr("src", imageFile);
+        }
+        /*******cette fonction permet  d'affecter la couleur jaune ou bleu quand on clique dessus *********/
+        function affecte(elt_id, couleur) {
+            elt_id = "#i" + elt_id;
+            switch (couleur) {
+                case 1:
+                    imageFile = "bleu.gif";
+                    break; // image pion jaune
+                case -1:
+                    imageFile = "jaune.gif";
+                    break; // image pion bleu
+                case 0:
+                    imageFile = "blanc.gif";
+            }
+
+
+            changer(elt_id, imageFile); // permet de récupérer l'id de l'image qui doit etre affecter
+        }
+        /**** cette fonction en Ajax utilise la méthode POST pour envoyer la requête à l'url lire_case.php******/
+        function lecture() {
+            $.ajax({
+                type: "POST",
+                url: "lire_cases.php",
+                data: "cpt=" + cpt,
+                success: function (msg) {
+                    if (msg[1] == 'e') alert(msg +
+                    ": l'ordre à échoué"); // 'e' est le premier caractère du mot erreur contenu dans les msgs d'erreur; Alert=printf
+                    else {
+                        eval(msg); //Evalue et exécute le code javascript contenu dans msg.
+
+                    }
+                }
+            });
+        }
+
+        /********** cette fonction permet de gérer le démmarage et l'arrêt du timer ******/
+        function start_stop() {
+            if (commence == 0) {
+                commence = 1;
+                timer = setInterval("lecture()", 5500);
+                $('#bouton').val('pause');
+
+            } else {
+                commence = 0;
+                clearInterval(timer);
+                $('#bouton').val('lecture');
+
+            }
+        }
+
+
+        //Création des lignes qui vont etre utilisées dans le plateau final
+        var lettres = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+        var ligne, plateau = [];
+        console.log(ligne, plateau);
+        for (var i = 0; i < 10; ++i) {
+            ligne = [];
+            for (var j = 0; j < 3; ++j) ligne.push(lettres[i] + (i + 1));
+            plateau.push(ligne);
+            console.log(j);
+        }
+
+
+
+        document.write("<center><br>"); //Centrage du plateau
+
+
+        for (var i = 0; i < 10; ++i) {
+            for (var j = 0; j < 10; ++j) {
+
+                function X(i) {
+                    function X(j) {
+                        var xhr_object = null; //Initialisation de la variable xhr_object
+
+                        if (window.XMLHttpRequest) // Firefox, Google Chrome, d’Opera, de Safari 
+                            xhr_object = new XMLHttpRequest(); // l'objet xhr reçoit l'outil de requete propre à Firefox
+                        else if (window
+                            .ActiveXObject) // Internet Explorer utilise window.ActiveXObject  dans le cas d'une requete
+                            xhr_object = new ActiveXObject(
+                            "Microsoft.XMLHTTP"); // Donc si c'est le cas l'objet xhr reçoit l'outil de requete propre à Internet Explorer
+                        else { // XMLHttpRequest non support? par le navigateur 
+                            alert(
+                            "Votre navigateur ne supporte pas les objets XMLHTTPRequest..."); //Sinon le navigateur utilisé ne supporte aucune de ces 2 méthodes de requetes
+                            return;
+                        }
+
+
+                    }
+                }
+                if (((i + j) % 2) == 0) {
+                    document.write("<img id=\"i1\" src='noir.gif' onclick=X() width=50 height=50 height=" + plateau[i +
+                        1] + ">");
+                } else {
+                    document.write("<img id=\"i2\" src='blanc.gif' onclick=X() width=50 height=50 height=" + plateau[j +
+                        1] + ">");
+
+                    //document.write("<img src='blanc.gif' onclick=X(i) width=50 height=50 height="+plateau[i][j]+">");
+                    //document.write("<img src='noir.gif' onclick=X(j) width=50 height=50 height="+plateau[i][j]+">");
+                }
+            }
+        }
+    </script>
+
+
+    <div style="left:50px; top:200px; position:absolute">
+
+        <input type="submit" name="Submit" value="lecture" id="bouton" onClick="start_stop();"></input>
+
+    </div>
+
+    <div id="bandeau" style="left:50px; top:200px; position:absolute"></div>
+
+</body>
+
+</html>
